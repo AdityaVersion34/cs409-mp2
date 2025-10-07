@@ -510,6 +510,7 @@
   background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
   border-radius: 10px;
   transition: width 0.3s ease;
+  width: var(--stat-percentage);
 }
 
 .stat-value {

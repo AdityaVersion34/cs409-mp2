@@ -104,30 +104,6 @@ const PokemonDetail: React.FC = () => {
     }
   };
 
-  const getTypeColor = (type: string) => {
-    const colors: { [key: string]: string } = {
-      normal: '#A8A878',
-      fire: '#F08030',
-      water: '#6890F0',
-      electric: '#F8D030',
-      grass: '#78C850',
-      ice: '#98D8D8',
-      fighting: '#C03028',
-      poison: '#A040A0',
-      ground: '#E0C068',
-      flying: '#A890F0',
-      psychic: '#F85888',
-      bug: '#A8B820',
-      rock: '#B8A038',
-      ghost: '#705898',
-      dragon: '#7038F8',
-      dark: '#705848',
-      steel: '#B8B8D0',
-      fairy: '#EE99AC',
-    };
-    return colors[type] || '#68A090';
-  };
-
   const getPreviousPokemonId = () => {
     const currentId = parseInt(id || '1');
     return currentId === 1 ? TOTAL_POKEMON : currentId - 1;
@@ -189,8 +165,7 @@ const PokemonDetail: React.FC = () => {
               {pokemon.types.map((typeInfo, index) => (
                 <span
                   key={index}
-                  className="pokemon-type"
-                  style={{ backgroundColor: getTypeColor(typeInfo.type.name) }}
+                  className={`pokemon-type type-${typeInfo.type.name}`}
                 >
                   {typeInfo.type.name}
                 </span>
@@ -235,13 +210,14 @@ const PokemonDetail: React.FC = () => {
           <h3>Base Stats</h3>
           <div className="stats-container">
             {pokemon.stats.map((statInfo, index) => (
-              <div key={index} className="stat-item">
+              <div
+                key={index}
+                className="stat-item"
+                style={{ '--stat-percentage': `${(statInfo.base_stat / 255) * 100}%` } as React.CSSProperties}
+              >
                 <div className="stat-name">{formatStatName(statInfo.stat.name)}</div>
                 <div className="stat-bar-container">
-                  <div
-                    className="stat-bar"
-                    style={{ width: `${(statInfo.base_stat / 255) * 100}%` }}
-                  ></div>
+                  <div className="stat-bar"></div>
                 </div>
                 <div className="stat-value">{statInfo.base_stat}</div>
               </div>
