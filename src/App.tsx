@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
 import PokemonList from './components/PokemonList';
 import PokemonDetail from './components/PokemonDetail';
+import GalleryView from './components/GalleryView';
 
 interface Pokemon {
   id: number;
@@ -11,6 +12,11 @@ interface Pokemon {
   sprites: {
     front_default: string;
   };
+  types: Array<{
+    type: {
+      name: string;
+    };
+  }>;
 }
 
 interface PokemonListItem {
@@ -22,6 +28,7 @@ function App() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchAllPokemon = async () => {
@@ -41,6 +48,7 @@ function App() {
               sprites: {
                 front_default: detailResponse.data.sprites.front_default,
               },
+              types: detailResponse.data.types,
             };
           })
         );
@@ -76,17 +84,39 @@ function App() {
     );
   }
 
+  const showNavigation = !location.pathname.includes('/pokemon/');
+
   return (
     <div className="App">
       <div className="App-header">
+        {showNavigation && (
+          <nav className="view-navigation">
+            <Link
+              to="/"
+              className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+            >
+              List View
+            </Link>
+            <Link
+              to="/gallery"
+              className={`nav-link ${location.pathname === '/gallery' ? 'active' : ''}`}
+            >
+              Gallery View
+            </Link>
+          </nav>
+        )}
         <Routes>
-          <Route 
-            path="/" 
-            element={<PokemonList pokemonList={pokemonList} />} 
+          <Route
+            path="/"
+            element={<PokemonList pokemonList={pokemonList} />}
           />
-          <Route 
-            path="/pokemon/:id" 
-            element={<PokemonDetail />} 
+          <Route
+            path="/gallery"
+            element={<GalleryView pokemonList={pokemonList} />}
+          />
+          <Route
+            path="/pokemon/:id"
+            element={<PokemonDetail />}
           />
         </Routes>
       </div>
