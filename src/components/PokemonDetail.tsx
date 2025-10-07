@@ -57,6 +57,7 @@ const PokemonDetail: React.FC = () => {
   const [species, setSpecies] = useState<PokemonSpecies | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const TOTAL_POKEMON = 151; // Total number of Pokemon we're working with
 
   useEffect(() => {
     const fetchPokemonDetail = async () => {
@@ -127,6 +128,16 @@ const PokemonDetail: React.FC = () => {
     return colors[type] || '#68A090';
   };
 
+  const getPreviousPokemonId = () => {
+    const currentId = parseInt(id || '1');
+    return currentId === 1 ? TOTAL_POKEMON : currentId - 1;
+  };
+
+  const getNextPokemonId = () => {
+    const currentId = parseInt(id || '1');
+    return currentId === TOTAL_POKEMON ? 1 : currentId + 1;
+  };
+
   if (loading) {
     return (
       <div className="pokemon-detail">
@@ -146,8 +157,18 @@ const PokemonDetail: React.FC = () => {
 
   return (
     <div className="pokemon-detail">
-      <Link to="/" className="back-button">← Back to Pokédex</Link>
-      
+      <div className="navigation-header">
+        <Link to="/" className="back-button">← Back to Pokédex</Link>
+        <div className="nav-buttons">
+          <Link to={`/pokemon/${getPreviousPokemonId()}`} className="nav-button prev-button">
+            ← Previous
+          </Link>
+          <Link to={`/pokemon/${getNextPokemonId()}`} className="nav-button next-button">
+            Next →
+          </Link>
+        </div>
+      </div>
+
       <div className="pokemon-detail-content">
         <div className="pokemon-detail-header">
           <div className="pokemon-detail-image">

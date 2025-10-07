@@ -13,19 +13,46 @@ interface PokemonListProps {
   pokemonList: Pokemon[];
 }
 
+type SortProperty = 'name' | 'id';
+type SortOrder = 'asc' | 'desc';
+
 const PokemonList: React.FC<PokemonListProps> = ({ pokemonList }) => {
   const [filteredPokemon, setFilteredPokemon] = useState<Pokemon[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortProperty, setSortProperty] = useState<SortProperty>('id');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
   useEffect(() => {
-    const filtered = pokemonList.filter(pokemon =>
+    let filtered = pokemonList.filter(pokemon =>
       pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    // Apply sorting
+    filtered = [...filtered].sort((a, b) => {
+      let comparison = 0;
+
+      if (sortProperty === 'name') {
+        comparison = a.name.localeCompare(b.name);
+      } else if (sortProperty === 'id') {
+        comparison = a.id - b.id;
+      }
+
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
     setFilteredPokemon(filtered);
-  }, [searchQuery, pokemonList]);
+  }, [searchQuery, pokemonList, sortProperty, sortOrder]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+  };
+
+  const handleSortPropertyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortProperty(e.target.value as SortProperty);
+  };
+
+  const handleSortOrderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSortOrder(e.target.value as SortOrder);
   };
 
   return (
@@ -40,7 +67,48 @@ const PokemonList: React.FC<PokemonListProps> = ({ pokemonList }) => {
           className="search-input"
         />
       </div>
-      
+
+      <div className="sort-controls">
+        <div className="sort-property">
+          <label htmlFor="sort-select">Sort by:</label>
+          <select
+            id="sort-select"
+            value={sortProperty}
+            onChange={handleSortPropertyChange}
+            className="sort-dropdown"
+          >
+            <option value="id">Pokemon Number</option>
+            <option value="name">Alphabetical</option>
+          </select>
+        </div>
+
+        <div className="sort-order">
+          <label>Order:</label>
+          <div className="radio-group">
+            <label className="radio-label">
+              <input
+                type="radio"
+                name="sortOrder"
+                value="asc"
+                checked={sortOrder === 'asc'}
+                onChange={handleSortOrderChange}
+              />
+              Ascending
+            </label>
+            <label className="radio-label">
+              <input
+                type="radio"
+                name="sortOrder"
+                value="desc"
+                checked={sortOrder === 'desc'}
+                onChange={handleSortOrderChange}
+              />
+              Descending
+            </label>
+          </div>
+        </div>
+      </div>
+
       {filteredPokemon.length === 0 ? (
         <div className="no-results">No Pokemon found matching your search.</div>
       ) : (
